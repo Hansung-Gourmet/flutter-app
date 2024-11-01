@@ -18,42 +18,44 @@ class _LoginscreenState extends State<LoginScreen> {
   String? _userPwd;
 
 
-  Future<void> login() async{
-    final check=_formKey.currentState!.validate();//모두 null을 리턴하면 true 리턴
-    if(check)
-    {
-        _formKey.currentState!.save();
-        try{
-          UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: _userEmail!, password: _userPwd!);
-          Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context){
-                return MapScreen(0);
-              }),
-              (route)=>false
-          );
-        }catch (e) {
-          String message = '로그인 실패';
-          if (e is FirebaseAuthException) {
-            if (e.code == 'user-not-found') {
-              message = '사용자를 찾을 수 없습니다.';
-            } else if (e.code == 'wrong-password') {
-              message = '잘못된 비밀번호입니다.';
-            } else {
-              message = '로그인 실패';
-            }
+  Future<void> login() async {
+    final check = _formKey.currentState!.validate(); //모두 null을 리턴하면 true 리턴
+    if (check) {
+      _formKey.currentState!.save();
+      try {
+        UserCredential userCredential = await FirebaseAuth.instance
+            .signInWithEmailAndPassword(
+            email: _userEmail!, password: _userPwd!);
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) {
+              return MapScreen(0);
+            }),
+                (route) => false
+        );
+      } catch (e) {
+        String message = '로그인 실패';
+        if (e is FirebaseAuthException) {
+          if (e.code == 'user-not-found') {
+            message = '사용자를 찾을 수 없습니다.';
+          } else if (e.code == 'wrong-password') {
+            message = '잘못된 비밀번호입니다.';
+          } else {
+            message = '${e} 로그인 실패';
           }
-          // Snackbar 띄우기
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text(message),
-                duration: Duration(seconds: 1),
-            ),
-
-          );
         }
+        // Snackbar 띄우기
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(message),
+            duration: Duration(seconds: 1),
+          ),
+
+        );
+      }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

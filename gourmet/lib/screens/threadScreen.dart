@@ -19,11 +19,12 @@ class ThreadScreen extends StatefulWidget {
 class _ThreadScreenState extends State<ThreadScreen> {
   late int _selectedIndex;  // null 안전성을 위해 late 사용
 
-
+  Future<DocumentSnapshot>? _loadUserdata;
   @override
   void initState() {
     super.initState();
     _selectedIndex = widget.selected;
+    _loadUserdata=_loadUserData();
   }
 
   // DocumentSnapshot을 반환하도록 수정
@@ -50,6 +51,7 @@ class _ThreadScreenState extends State<ThreadScreen> {
         ),
         actions: [
           IconButton(
+
               onPressed: ()async{
                 await FirebaseAuth.instance.signOut();
 
@@ -64,7 +66,7 @@ class _ThreadScreenState extends State<ThreadScreen> {
         ],
       ),
       drawer: FutureBuilder<DocumentSnapshot>(
-        future: _loadUserData(),
+        future: _loadUserdata,
         builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Drawer(
@@ -260,7 +262,7 @@ class _ThreadScreenState extends State<ThreadScreen> {
           ),
         ],
         currentIndex: _selectedIndex,
-        onTap: (index) {
+        onTap: (index) async{
           if (index == 0) {
             Navigator.pushAndRemoveUntil(
               context,
@@ -268,11 +270,51 @@ class _ThreadScreenState extends State<ThreadScreen> {
                   (route) => false,
             );
           } else if (index == 1) {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => UploadScreen(index)),
-                  (route) => false,
-            );
+            if (_loadUserdata == null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('데이터를 불러오는 중입니다. 잠시만 기다려주세요.'))
+              );
+              return;
+            }
+            // 현재 _loadUserdata데이터가 있을때까지 기다리기
+            final snapshot = await _loadUserdata!;
+            final isStudent = (snapshot.data() as Map<String, dynamic>)["Is_student"];
+            if(isStudent){
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => UploadScreen(index)),
+                    (route) => false,
+              );
+            }else
+            {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('알림'),
+                    content: Row(
+                      children: [
+                        Text("일반유저",style:
+                        TextStyle(
+                            fontSize: 15,
+                            color: Colors.red
+                        ),),
+                        Text('이므로 작성할 수 없습니다.',style:
+                        TextStyle(
+                            fontSize: 15
+                        ),),
+                      ],
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text('확인'),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ],
+                  );
+                },
+              );
+            }
           } else if (index == 2) {
             Navigator.pushAndRemoveUntil(
               context,

@@ -12,6 +12,7 @@ import 'myPageScreen.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
+
 class MapScreen extends StatefulWidget {
   final int selected;  // final로 변경
 
@@ -26,6 +27,7 @@ class _MapScreenState extends State<MapScreen> {
   List<LatLng> locations=[LatLng(37.582848,127.01058),LatLng(37.588227,126.9936),LatLng(37.5893,127.032)];//한성대 성균관대 고려대 순서
   Map<int,String> _currentStatusMap={0:"한성대학교",1:"성균관대학교",2:"고려대학교"};
   late int _selectedIndex;  // null 안전성을 위해 late 사용
+  Future<DocumentSnapshot>? _loadUserdata;
 
   //초기 카메라 위치는 한성대학교로 설청할것임.
 
@@ -74,6 +76,7 @@ class _MapScreenState extends State<MapScreen> {
     super.initState();
     _selectedIndex = widget.selected;
     initFuture=initData();
+    _loadUserdata=_loadUserData();
   }
 
   Future<DocumentSnapshot> _loadUserData() async {
@@ -253,7 +256,7 @@ class _MapScreenState extends State<MapScreen> {
         ],
       ),
       drawer: FutureBuilder<DocumentSnapshot>(
-        future: _loadUserData(),
+        future: _loadUserdata,
         builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Drawer(
@@ -629,7 +632,7 @@ class _MapScreenState extends State<MapScreen> {
           ),
         ],
         currentIndex: _selectedIndex,
-        onTap: (index) {
+        onTap: (index) async{
           if (index == 0) {
             Navigator.pushAndRemoveUntil(
               context,
@@ -637,12 +640,54 @@ class _MapScreenState extends State<MapScreen> {
                   (route) => false,
             );
           } else if (index == 1) {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => UploadScreen(index)),
-                  (route) => false,
-            );
-          } else if (index == 2) {
+            if (_loadUserdata == null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('데이터를 불러오는 중입니다. 잠시만 기다려주세요.'))
+              );
+              return;
+            }
+            // 현재 _loadUserdata데이터가 있을때까지 기다리기
+            final snapshot = await _loadUserdata!;
+            final isStudent = (snapshot.data() as Map<String, dynamic>)["Is_student"];
+            if(isStudent){
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => UploadScreen(index)),
+                    (route) => false,
+              );
+            }else
+            {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('알림'),
+                    content: Row(
+                      children: [
+                        Text("일반유저",style:
+                        TextStyle(
+                            fontSize: 15,
+                            color: Colors.red
+                        ),),
+                        Text('이므로 작성할 수 없습니다.',style:
+                        TextStyle(
+                            fontSize: 15
+                        ),),
+                      ],
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text('확인'),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ],
+                  );
+                },
+              );
+            }
+
+
+          }  else if (index == 2) {
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => ThreadScreen(index)),
