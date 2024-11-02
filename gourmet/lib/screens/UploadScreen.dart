@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gourmet_app/screens/threadScreen.dart';
 import 'package:image_picker/image_picker.dart';
@@ -38,19 +39,46 @@ class _UploadScreenState extends State<UploadScreen> {
     _selectedIndex = widget.selected;
     _loadUserdata=_loadUserData();
   }
-
+  void _handleError(dynamic error) {
+    print('Error: ${error.toString()}');
+    if (error is FirebaseException) {
+      print('Error Code: ${error.code}');
+      print('Error Message: ${error.message}');
+    } else if (error is PlatformException) {
+      print('Platform Error: ${error.message}');
+    } else {
+      print('Unknown Error: $error');
+    }
+  }
   Future<void> pickAndUploadMultipleImages() async {
     try {
+      // Firebase Storage에 연결 확인
       final ref = FirebaseStorage.instance.ref();
       final testRef = ref.child('test/hello.txt');
 
-      final data = utf8.encode('Hello World!');
-      await testRef.putData(data);
+      // 파일이 존재하는지 확인
+      try {
+        String downloadURL = await testRef.getDownloadURL();
+        print('File exists at this reference. Download URL: $downloadURL');
+      } catch (e) {
+        // 파일이 존재하지 않으면 업로드 진행
+        print('File does not exist. Uploading now...');
+        try {
+          final data = utf8.encode('Hello World!');
+          await testRef.putData(data);
+          print('Upload success!');
 
-      final url = await testRef.getDownloadURL();
-      print('Success! URL: $url');
+          // 업로드 후 파일의 URL 가져오기
+          String downloadURL = await testRef.getDownloadURL();
+          print('File uploaded successfully. Download URL: $downloadURL');
+        } catch (uploadError) {
+          // 업로드 중 에러 처리
+          _handleError(uploadError);
+        }
+      }
     } catch (e) {
-      print('Error: $e');
+      // Firebase Storage에 연결 중 에러 처리
+      _handleError(e);
     }
     // try {
     //   print('Starting image picker...');
