@@ -2,7 +2,7 @@
   "project_info": {
     "project_number": "875406220149",
     "project_id": "gourmet-app-31aab",
-    "storage_bucket": "gourmet-app-31aab.appspot.com"
+    "storage_bucket": "gourmet-app-31aab.firebasestorage.app"
   },
   "client": [
     {

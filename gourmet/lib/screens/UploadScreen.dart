@@ -27,17 +27,25 @@ class UploadScreen extends StatefulWidget {
 class _UploadScreenState extends State<UploadScreen> {
   late int _selectedIndex;  // null 안전성을 위해 late 사용
   Future<DocumentSnapshot>? _loadUserdata;
+  Future<QuerySnapshot>? _restaurantdata;
   int rating=0;
+  int  findFood=0;//0이면 안보이게, 1이면 검색 2이면 검색결과보여주기
 
+  TextEditingController textEditingController=new TextEditingController();
   List<String> imageUrls = [];  // 업로드된 이미지 URL 저장
-  bool imageCheck=false;//사진선택
+  int imageCheck=0;//사진선택 0이면 선택x 1이면 업로드 대기중 2면 업로드 완료
   bool restCheck=false;//음식점선택
+String reviewContent="";
+  String foodName="";
+ bool reviewCheck=false;
 
+  String research="";
   @override
   void initState() {
     super.initState();
     _selectedIndex = widget.selected;
     _loadUserdata=_loadUserData();
+    _restaurantdata=_restaurantData();
   }
   void _handleError(dynamic error) {
     print('Error: ${error.toString()}');
@@ -51,135 +59,107 @@ class _UploadScreenState extends State<UploadScreen> {
     }
   }
   Future<void> pickAndUploadMultipleImages() async {
+
     try {
-      // Firebase Storage에 연결 확인
-      final ref = FirebaseStorage.instance.ref();
-      final testRef = ref.child('test/hello.txt');
+      print('Starting image picker...');
+      final imagePicker = ImagePicker();
+      final List<XFile> pickedFiles = await imagePicker.pickMultiImage(
+      );
 
-      // 파일이 존재하는지 확인
-      try {
-        String downloadURL = await testRef.getDownloadURL();
-        print('File exists at this reference. Download URL: $downloadURL');
-      } catch (e) {
-        // 파일이 존재하지 않으면 업로드 진행
-        print('File does not exist. Uploading now...');
+      print('Picked files count: ${pickedFiles.length}');
+
+      if (pickedFiles.isEmpty) {
+        setState(() {
+          imageCheck = 0;
+          imageUrls = [];
+        });
+        return;
+      }
+
+      List<String> uploadedUrls = [];
+
+      for (XFile imageFile in pickedFiles) {
         try {
-          final data = utf8.encode('Hello World!');
-          await testRef.putData(data);
-          print('Upload success!');
+          // 파일 존재 확인
+          final file = File(imageFile.path);
+          final exists = await file.exists();
+          print('File exists at ${imageFile.path}: $exists');
+          print('File size: ${await file.length()} bytes');
 
-          // 업로드 후 파일의 URL 가져오기
-          String downloadURL = await testRef.getDownloadURL();
-          print('File uploaded successfully. Download URL: $downloadURL');
-        } catch (uploadError) {
-          // 업로드 중 에러 처리
-          _handleError(uploadError);
+          final fileName = '${DateTime.now().millisecondsSinceEpoch}_${uploadedUrls.length}.jpg';
+          print('Attempting to upload file: $fileName');
+
+          // Storage 참조 생성 확인
+          final storageRef = FirebaseStorage.instance
+              .ref()
+              .child('user_images')
+              .child(fileName);
+          print('Storage reference created: ${storageRef.fullPath}');
+
+          // 메타데이터 설정
+          final metadata = SettableMetadata(
+              contentType: 'image/jpeg',
+              customMetadata: {
+                'originalPath': imageFile.path,
+                'uploadTime': DateTime.now().toIso8601String(),
+              }
+          );
+
+          // 업로드 시작
+          print('Starting file upload...');
+          final uploadTask = storageRef.putFile(file, metadata);
+
+          // 업로드 진행상황 모니터링
+          uploadTask.snapshotEvents.listen(
+                (TaskSnapshot snapshot) {
+              print('Upload progress: ${snapshot.bytesTransferred}/${snapshot.totalBytes} bytes');
+            },
+            onError: (error) {
+              print('Upload snapshot error: $error');
+            },
+          );
+
+          setState(() {
+            imageCheck=1;
+          });
+          // 업로드 완료 대기
+          final snapshot = await uploadTask;
+          print('Upload completed. State: ${snapshot.state}');
+          if (snapshot.state == TaskState.success) {
+            // URL 가져오기 시도
+            try {
+              final downloadUrl = await storageRef.getDownloadURL();
+              print('Download URL obtained: $downloadUrl');
+              uploadedUrls.add(downloadUrl);
+            } catch (urlError) {
+              print('Error getting download URL: $urlError');
+              throw urlError;
+            }
+          } else {
+            print('Upload finished but not successful. State: ${snapshot.state}');
+          }
+
+        } catch (singleFileError) {
+          print('Error processing single file: $singleFileError');
+          // 스택 트레이스 출력
+          print(StackTrace.current);
         }
       }
-    } catch (e) {
-      // Firebase Storage에 연결 중 에러 처리
-      _handleError(e);
+
+      setState(() {
+        imageUrls = uploadedUrls;
+        imageCheck = 2;
+        print('Final state - imageCheck: $imageCheck, URLs count: ${imageUrls.length}');
+      });
+
+    } catch (error, stackTrace) {
+      print('Main error in pickAndUploadMultipleImages: $error');
+      print('Stack trace: $stackTrace');
+      setState(() {
+        imageCheck = 0;
+        imageUrls = [];
+      });
     }
-    // try {
-    //   print('Starting image picker...');
-    //   final imagePicker = ImagePicker();
-    //   final List<XFile> pickedFiles = await imagePicker.pickMultiImage(
-    //     imageQuality: 50,
-    //     maxHeight: 150,
-    //   );
-    //
-    //   print('Picked files count: ${pickedFiles.length}');
-    //
-    //   if (pickedFiles.isEmpty) {
-    //     setState(() {
-    //       imageCheck = false;
-    //       imageUrls = [];
-    //     });
-    //     return;
-    //   }
-    //
-    //   List<String> uploadedUrls = [];
-    //
-    //   for (XFile imageFile in pickedFiles) {
-    //     try {
-    //       // 파일 존재 확인
-    //       final file = File(imageFile.path);
-    //       final exists = await file.exists();
-    //       print('File exists at ${imageFile.path}: $exists');
-    //       print('File size: ${await file.length()} bytes');
-    //
-    //       final fileName = '${DateTime.now().millisecondsSinceEpoch}_${uploadedUrls.length}.jpg';
-    //       print('Attempting to upload file: $fileName');
-    //
-    //       // Storage 참조 생성 확인
-    //       final storageRef = FirebaseStorage.instance
-    //           .ref()
-    //           .child('user_images')
-    //           .child(fileName);
-    //       print('Storage reference created: ${storageRef.fullPath}');
-    //
-    //       // 메타데이터 설정
-    //       final metadata = SettableMetadata(
-    //           contentType: 'image/jpeg',
-    //           customMetadata: {
-    //             'originalPath': imageFile.path,
-    //             'uploadTime': DateTime.now().toIso8601String(),
-    //           }
-    //       );
-    //
-    //       // 업로드 시작
-    //       print('Starting file upload...');
-    //       final uploadTask = storageRef.putFile(file, metadata);
-    //
-    //       // 업로드 진행상황 모니터링
-    //       uploadTask.snapshotEvents.listen(
-    //             (TaskSnapshot snapshot) {
-    //           print('Upload progress: ${snapshot.bytesTransferred}/${snapshot.totalBytes} bytes');
-    //         },
-    //         onError: (error) {
-    //           print('Upload snapshot error: $error');
-    //         },
-    //       );
-    //
-    //       // 업로드 완료 대기
-    //       final snapshot = await uploadTask;
-    //       print('Upload completed. State: ${snapshot.state}');
-    //
-    //       if (snapshot.state == TaskState.success) {
-    //         // URL 가져오기 시도
-    //         try {
-    //           final downloadUrl = await storageRef.getDownloadURL();
-    //           print('Download URL obtained: $downloadUrl');
-    //           uploadedUrls.add(downloadUrl);
-    //         } catch (urlError) {
-    //           print('Error getting download URL: $urlError');
-    //           throw urlError;
-    //         }
-    //       } else {
-    //         print('Upload finished but not successful. State: ${snapshot.state}');
-    //       }
-    //
-    //     } catch (singleFileError) {
-    //       print('Error processing single file: $singleFileError');
-    //       // 스택 트레이스 출력
-    //       print(StackTrace.current);
-    //     }
-    //   }
-    //
-    //   setState(() {
-    //     imageUrls = uploadedUrls;
-    //     imageCheck = uploadedUrls.isNotEmpty;
-    //     print('Final state - imageCheck: $imageCheck, URLs count: ${imageUrls.length}');
-    //   });
-    //
-    // } catch (error, stackTrace) {
-    //   print('Main error in pickAndUploadMultipleImages: $error');
-    //   print('Stack trace: $stackTrace');
-    //   setState(() {
-    //     imageCheck = false;
-    //     imageUrls = [];
-    //   });
-    // }
   }
   // DocumentSnapshot을 반환하도록 수정
   Future<DocumentSnapshot> _loadUserData() async {
@@ -188,6 +168,20 @@ class _UploadScreenState extends State<UploadScreen> {
         .collection("users")
         .doc(userUid)
         .get();
+  }
+  Future<QuerySnapshot> _restaurantData() async {
+    return await FirebaseFirestore.instance
+        .collection("Restaurant")
+        .get();
+  }
+
+  Future<List<DocumentSnapshot>> searchRestaurants(String searchText) {
+    return _restaurantdata!.then((QuerySnapshot snapshot) {
+      return snapshot.docs.where((doc) {
+        String name = doc['Restaurant_name'].toString().toLowerCase();
+        return name.contains(searchText.toLowerCase());
+      }).toList();
+    });
   }
 
   @override
@@ -270,126 +264,371 @@ class _UploadScreenState extends State<UploadScreen> {
           );
         },
       ),
-      body:FutureBuilder<DocumentSnapshot>(
-      future: _loadUserdata,
-      builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        }
+      body:GestureDetector(
+        onTap: (){
+          FocusScope.of(context).unfocus();
+        },
+        child: SingleChildScrollView(
+          child: FutureBuilder<DocumentSnapshot>(
+          future: _loadUserdata,
+          builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return Center(child: Text('오류가 발생했습니다: ${snapshot.error}'));
+            }
 
-        if (snapshot.hasError) {
-          return Center(child: Text('오류가 발생했습니다: ${snapshot.error}'));
-        }
+            if (!snapshot.hasData || snapshot.data == null) {
+              return Center(child: Text('데이터를 찾을 수 없습니다'));
+            }
 
-        if (!snapshot.hasData || snapshot.data == null) {
-          return Center(child: Text('데이터를 찾을 수 없습니다'));
-        }
-
-        //준비되면 yserdata를 이용할 수 있다는것이다.
-        final userData = snapshot.data!.data() as Map<String, dynamic>;
-        // ready 상태에 따라 다른 화면 보여주기
-        return Container(
-          padding: EdgeInsets.only(left: 30),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: 40,
-              ),
-              Text("${userData["Nickname"]}"),
-              Text("새로운 리뷰글을 작성해주세요!!!"),
-              //Icons.star_border:Icons.star,color: Colors.grey[700]
-              Row(
-                mainAxisSize: MainAxisSize.min,
+            //준비되면 yserdata를 이용할 수 있다는것이다.
+            final userData = snapshot.data!.data() as Map<String, dynamic>;
+            // ready 상태에 따라 다른 화면 보여주기
+            return Container(
+              padding: EdgeInsets.only(left: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  IconButton(
-                      visualDensity: VisualDensity(horizontal: -4, vertical: -4), // 버튼 간격 줄이기
-                      padding: EdgeInsets.zero, // 패딩 제거
-                      onPressed: (){
+                  SizedBox(
+                    height: 40,
+                  ),
+                  Row(
+                    children: [
+                      Text("${userData["Nickname"]}"),
+                      SizedBox(
+                        width: 180,
+                      ),
+                      ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.black,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(15)), // 사각형 모양을 위한 설정
+                            ),
+                          ),
+                          onPressed:  findFood==2&&imageCheck==2&&reviewCheck&&rating>0 ? ()async{
+                            Map<String, dynamic> reviewData = {
+                              'Bad_rate': 0,
+                              'Bad_users': [],  // 리스트 변수 사용
+                              'Content': reviewContent,
+                              'Date': Timestamp.now(),
+                              'Good_rate': 0,
+                              'Good_users': [],  // 리스트 변수 사용
+                              'Images': imageUrls,  // 리스트 변수 사용
+                              'Nickname': userData["Nickname"],
+                              'Rating': rating,
+                              'Restaurant_name': foodName,
+                              'UserId': FirebaseAuth.instance.currentUser!.uid
+                            };
+                            await FirebaseFirestore.instance
+                                .collection('Review')
+                                .add(reviewData);
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(builder: (context) => ThreadScreen(2)),
+                                  (route) => false,
+                            );
+                          }:null,
+                          child: Text("등록하기")),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                          visualDensity: VisualDensity(horizontal: -4, vertical: -4), // 버튼 간격 줄이기
+                          padding: EdgeInsets.zero, // 패딩 제거
+                          onPressed: (){
+                            setState(() {
+                              rating=1;
+                            });
+                          },
+                          icon: rating < 1 ?Icon(Icons.star_border,color: Colors.grey[700]):Icon(Icons.star,color: Colors.grey[700])
+                      ),
+                      IconButton(
+                          visualDensity: VisualDensity(horizontal: -4, vertical: -4), // 버튼 간격 줄이기
+                          padding: EdgeInsets.zero, // 패딩 제거
+                          onPressed: (){
+                            setState(() {
+                              rating=2;
+                            });
+                          },
+                          icon: rating < 2 ?Icon(Icons.star_border,color: Colors.grey[700]):Icon(Icons.star,color: Colors.grey[700])
+                      ),
+                      IconButton(
+                          visualDensity: VisualDensity(horizontal: -4, vertical: -4), // 버튼 간격 줄이기
+                          padding: EdgeInsets.zero, // 패딩 제거
+                          onPressed: (){
+                            setState(() {
+                              rating=3;
+                            });
+                          },
+                          icon: rating < 3 ?Icon(Icons.star_border,color: Colors.grey[700]):Icon(Icons.star,color: Colors.grey[700])
+                      ),
+                      IconButton(
+                          visualDensity: VisualDensity(horizontal: -4, vertical: -4), // 버튼 간격 줄이기
+                          padding: EdgeInsets.zero, // 패딩 제거
+                          onPressed: (){
+                            setState(() {
+                              rating=4;
+                            });
+                          },
+                          icon: rating < 4 ?Icon(Icons.star_border,color: Colors.grey[700]):Icon(Icons.star,color: Colors.grey[700])
+                      ),
+                      IconButton(
+                          visualDensity: VisualDensity(horizontal: -4, vertical: -4), // 버튼 간격 줄이기
+                          padding: EdgeInsets.zero, // 패딩 제거
+                          onPressed: (){
+                            setState(() {
+                              rating=5;
+                            });
+                          },
+                          icon: rating < 5 ?Icon(Icons.star_border,color: Colors.grey[700]):Icon(Icons.star,color: Colors.grey[700])
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Container(
+                    height: 200,
+                    width: 300,
+                    constraints: BoxConstraints(
+                      minHeight: 50,  // 최소 높이
+                      maxHeight: 200,  // 최대 높이
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: TextFormField(
+                      maxLines: null, // null로 설정하면 자동으로 늘어남
+                      minLines: 1, // 최소 라인 수
+                      keyboardType: TextInputType.multiline,
+                      controller: textEditingController,
+                      textInputAction: TextInputAction.done,  // 완료 버튼으로 변경
+                      // 또는 TextInputAction.next, TextInputAction.send 등
+                      onFieldSubmitted: (value) {
+                        // 완료 버튼 눌렀을 때 실행할 동작
+                        FocusScope.of(context).unfocus();  // 키보드 닫기
+                        reviewCheck=true;
+                      },
+                      onChanged: (value){
                         setState(() {
-                          rating=1;
+                          if(value==""){
+                            reviewCheck=false;
+                            reviewContent=value;
+                          }
+                          else
+                            {
+                              reviewCheck=true;
+                              reviewContent=value;
+                            }
+
                         });
                       },
-                      icon: rating < 1 ?Icon(Icons.star_border,color: Colors.grey[700]):Icon(Icons.star,color: Colors.grey[700])
+                      decoration: InputDecoration(
+                        border: InputBorder.none,  // 테두리 제거
+                        focusedBorder: InputBorder.none,  // 포커스 시 테두리 제거
+                        enabledBorder: InputBorder.none,  // 기본 테두리 제거
+                        errorBorder: InputBorder.none,  // 에러 시 테두리 제거
+                        disabledBorder: InputBorder.none,  // 비활성화 시 테두리 제거
+                        hintText: '여기다가 리뷰를 작성해주세요!',
+                        contentPadding: EdgeInsets.symmetric(
+                            horizontal: 5
+                        ),
+                      ),
+                    ),
                   ),
-                  IconButton(
-                      visualDensity: VisualDensity(horizontal: -4, vertical: -4), // 버튼 간격 줄이기
-                      padding: EdgeInsets.zero, // 패딩 제거
-                      onPressed: (){
+                  //Icons.star_border:Icons.star,color: Colors.grey[700]
+
+                  TextButton(
+                      onPressed: ()async{
+                        pickAndUploadMultipleImages();
+                      },
+                      child: Text("사진 추가+")
+                  ),
+                  if(imageCheck==1)
+                    Container(
+                        width: 300,
+                        height: 200,
+                        child: Center(child: CircularProgressIndicator()))
+                  else if(imageCheck==2)
+                    Container(
+                      height: 200,
+                      child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (contex,index){
+                            return Row(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: CachedNetworkImage(
+                                    imageUrl: imageUrls[index],
+                                    width: 300,  // Container 너비에 맞춤
+                                    height: 500,  // Container 높이에 맞춤
+                                    fit: BoxFit.fill,
+                                    placeholder: (context, url) => Center(
+                                        child: CircularProgressIndicator()
+                                    ),
+                                    errorWidget: (context, url, error) => Icon(Icons.error),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                )
+                              ],
+                            );
+                          },
+                          itemCount: imageUrls.length,
+                      ),
+                    )
+                  ,
+                  TextButton(
+                      onPressed: ()async{
                         setState(() {
-                          rating=2;
+                          research="";
+                          findFood=1;
                         });
                       },
-                      icon: rating < 2 ?Icon(Icons.star_border,color: Colors.grey[700]):Icon(Icons.star,color: Colors.grey[700])
+                      child: Text("음식점 추가+")
                   ),
-                  IconButton(
-                      visualDensity: VisualDensity(horizontal: -4, vertical: -4), // 버튼 간격 줄이기
-                      padding: EdgeInsets.zero, // 패딩 제거
-                      onPressed: (){
-                        setState(() {
-                          rating=3;
-                        });
-                      },
-                      icon: rating < 3 ?Icon(Icons.star_border,color: Colors.grey[700]):Icon(Icons.star,color: Colors.grey[700])
-                  ),
-                  IconButton(
-                      visualDensity: VisualDensity(horizontal: -4, vertical: -4), // 버튼 간격 줄이기
-                      padding: EdgeInsets.zero, // 패딩 제거
-                      onPressed: (){
-                        setState(() {
-                          rating=4;
-                        });
-                      },
-                      icon: rating < 4 ?Icon(Icons.star_border,color: Colors.grey[700]):Icon(Icons.star,color: Colors.grey[700])
-                  ),
-                  IconButton(
-                      visualDensity: VisualDensity(horizontal: -4, vertical: -4), // 버튼 간격 줄이기
-                      padding: EdgeInsets.zero, // 패딩 제거
-                      onPressed: (){
-                        setState(() {
-                          rating=5;
-                        });
-                      },
-                      icon: rating < 5 ?Icon(Icons.star_border,color: Colors.grey[700]):Icon(Icons.star,color: Colors.grey[700])
-                  ),
+                  if(findFood==1)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 330,
+                          child: TextFormField(
+                            onChanged: (value) {
+                              setState(() {
+                                research = value.trim(); // 앞뒤 공백 제거
+                                print(research);
+                              });
+                            },
+                            // 스타일 및 UI
+                            decoration: InputDecoration(
+                              hintText: '레스토랑 검색...',
+                              prefixIcon: Icon(Icons.search),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 14
+                              ),
+                            ),
+                            // 입력 제어
+                            textInputAction: TextInputAction.search,
+                            keyboardType: TextInputType.text,
+                          ),
+                        ),
+                        Container(
+                          height: 240,
+                          child: FutureBuilder(
+                              future: searchRestaurants(research),
+                              builder: (context,snapshot){
+                                if (snapshot.connectionState == ConnectionState.waiting) {
+                                  return CircularProgressIndicator();
+                                }
+                                // 데이터가 없거나 리스트가 비어있을 때
+                                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                                  return Center(child: Text('검색 결과가 없습니다'));
+                                }
+                                final datas=snapshot.data;
+                                return ListView.builder(
+                                    itemBuilder: (context,index){
+                                      final documentData = datas[index].data() as Map<String, dynamic>;
+                                      return GestureDetector(
+                                        onTap: (){
+                                          setState(() {
+                                            restCheck=true;//굳이안써도될듯
+                                            findFood=2;
+                                            foodName=documentData["Restaurant_name"];
+                                          });
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.only(top: 20),
+                                          height: 90,
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  ClipRRect(
+                                                    borderRadius: BorderRadius.circular(10),
+                                                    child: CachedNetworkImage(
+                                                      imageUrl:  documentData["Restaurant_imgs"][0],
+                                                      width: 55,  // Container 너비에 맞춤
+                                                      height: 55,  // Container 높이에 맞춤
+                                                      fit: BoxFit.fill,
+                                                      placeholder: (context, url) => Center(
+                                                          child: CircularProgressIndicator()
+                                                      ),
+                                                      errorWidget: (context, url, error) => Icon(Icons.error),
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                  Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text(documentData["Restaurant_name"],style:
+                                                        TextStyle(
+                                                          fontSize: 15,
+                                                          fontWeight: FontWeight.w600,
+                                                        ),),
+                                                      Text(documentData["Category"],style:
+                                                        TextStyle(
+                                                          color: Colors.grey[500]
+                                                        ),)
+                                                    ],
+                                                  )
+                                                ],
+                                              ),
+                                              SizedBox(
+                                                height: 10,
+                                              ),
+                                              Container(
+                                                width: 340,
+                                                height:2,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.grey[300]
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    itemCount: datas!.length,
+                                );
+                              }),
+                        )
+                      ],
+                    )
+                  else if(findFood==2)
+                    Container(
+                      padding: EdgeInsets.only(left: 12),
+                        child: Text("${foodName}",
+                          style: TextStyle(
+                            fontSize: 15
+                          ),)
+                    ),
                 ],
               ),
-              TextButton(
-                  onPressed: ()async{
-                    pickAndUploadMultipleImages();
-                  }, 
-                  child: Text("사진 추가+")
+            );
+          },
               ),
-              if(!imageCheck)
-                Text("${imageUrls.length}"),
-              if(imageCheck)
-                Container(
-                  height: 200,
-                  child: ListView.builder(
-                      itemBuilder: (contex,index){
-                        return ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: CachedNetworkImage(
-                            imageUrl: imageUrls[index],
-                            width: 60,  // Container 너비에 맞춤
-                            height: 150,  // Container 높이에 맞춤
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => Center(
-                                child: CircularProgressIndicator()
-                            ),
-                            errorWidget: (context, url, error) => Icon(Icons.error),
-                          ),
-                        );
-                      },
-                      itemCount: imageUrls.length,
-                  ),
-                )
-
-            ],
-          ),
-        );
-      },
-    ),
+        ),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(

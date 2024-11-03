@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import "package:firebase_core/firebase_core.dart";
 import 'package:gourmet_app/screens/loginScreen.dart';
 
+import 'firebase_options.dart';
+
 
 
 void main(){
@@ -17,10 +19,14 @@ class MyApp extends StatelessWidget {
 
     Future<void> initializeApp() async {
       WidgetsFlutterBinding.ensureInitialized();
-      await Firebase.initializeApp();
-      await FirebaseAppCheck.instance.activate(
-        androidProvider: AndroidProvider.debug,
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+        name: 'gourmet',
       );
+      // await FirebaseAppCheck.instance.activate(
+      //   androidProvider: AndroidProvider.debug,
+      // );
+
       await Future.delayed(Duration(seconds: 1));
     }
 
