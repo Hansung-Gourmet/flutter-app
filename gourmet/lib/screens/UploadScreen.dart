@@ -287,7 +287,7 @@ String reviewContent="";
             final userData = snapshot.data!.data() as Map<String, dynamic>;
             // ready 상태에 따라 다른 화면 보여주기
             return Container(
-              padding: EdgeInsets.only(left: 10),
+              padding: EdgeInsets.only(left: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -296,9 +296,14 @@ String reviewContent="";
                   ),
                   Row(
                     children: [
-                      Text("${userData["Nickname"]}"),
+                      Text("${userData["Nickname"]}",style:
+                        TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.w700
+
+                        ),),
                       SizedBox(
-                        width: 180,
+                        width: 110,
                       ),
                       ElevatedButton(
                           style: ElevatedButton.styleFrom(
