@@ -217,12 +217,11 @@ class _LoginscreenState extends State<LoginScreen> {
                           ),
                         ),
                         onPressed: (){
-                          Navigator.pushAndRemoveUntil(
+                          Navigator.push(
                               context,
                               MaterialPageRoute(builder: (context){
                                 return SignupScreen();
-                              }),
-                                  (route)=>false
+                              })
                           );
                         },
                         child: Text("회원가입 하기",

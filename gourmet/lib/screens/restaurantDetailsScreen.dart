@@ -22,7 +22,7 @@ class _RestaurantDetailsScreenState extends State<RestaurantDetailsScreen> {
 
   bool _isMenu=true;
   late final Stream<QuerySnapshot> restaurantStream;
-  late final Stream<QuerySnapshot> reviewStream;
+  Stream<QuerySnapshot>? reviewStream;
   Future<DocumentSnapshot>? _loadUserdata;
 
   Future<DocumentSnapshot> _loadUserData() async {
@@ -42,14 +42,51 @@ class _RestaurantDetailsScreenState extends State<RestaurantDetailsScreen> {
         .where("Restaurant_name", isEqualTo: widget.name)
         .snapshots();
 
-    // 해당 레스토랑의 리뷰만 필터링
+    // 바로 스트림 설정
     reviewStream = FirebaseFirestore.instance
         .collection("Review")
-        .where("Restaurant_name", isEqualTo: widget.name)
+        .where("Restaurant_name", isEqualTo: widget.name)  // 1. 먼저 필터링
+        //.orderBy("Date", descending: true)  // 2. 그 다음 정렬
         .snapshots();
-
     _loadUserdata=_loadUserData();
   }
+
+  Future<void> initreviewStream()async{
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection("Review")
+        .where("Restaurant_name", isEqualTo: widget.name)
+        .get();
+
+    // 리뷰가 있으면 정렬된 스트림을, 없으면 기본 스트림을 설정
+    if (querySnapshot.docs.isNotEmpty) {
+      // Date 필드가 있는지 확인
+      bool hasDateField = querySnapshot.docs.every((doc) => doc.data().containsKey('Date') && doc.get('Date') != null);
+
+      if (hasDateField) {
+        // Date 필드가 존재하고 null이 아닐 때만 orderBy 사용
+        reviewStream = FirebaseFirestore.instance
+            .collection("Review")
+            .where("Restaurant_name", isEqualTo: widget.name)
+            .orderBy("Date", descending: true)
+            .snapshots();
+      } else {
+        // Date 필드가 없거나 null인 문서가 있으면 orderBy 사용하지 않음
+        reviewStream = FirebaseFirestore.instance
+            .collection("Review")
+            .where("Restaurant_name", isEqualTo: widget.name)
+            .snapshots();
+      }
+    } else {
+      reviewStream = FirebaseFirestore.instance
+          .collection("Review")
+          .where("Restaurant_name", isEqualTo: widget.name)
+          .snapshots();
+    }
+
+  }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -224,6 +261,14 @@ class _RestaurantDetailsScreenState extends State<RestaurantDetailsScreen> {
                 return Center(
                   child: CircularProgressIndicator(),
                 );
+              }
+              if (snapshot.hasError) {
+                return Center(child: Text("에러가 발생했습니다: ${snapshot.error}"));
+              }
+
+              // 데이터가 없을 때
+              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                return Center(child: Text("아직 리뷰가 없습니다."));
               }
               final data=snapshot.data!.docs;
               return StreamBuilder<QuerySnapshot>(

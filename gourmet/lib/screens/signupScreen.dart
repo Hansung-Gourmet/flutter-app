@@ -135,10 +135,24 @@ class _State extends State<SignupScreen> {
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 50),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(
-                      height: 110,
+                      height: 40,
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(right: 250),
+                      padding:EdgeInsets.only(right: 10),
+                      child: IconButton(
+                          visualDensity: VisualDensity(horizontal: -4, vertical: -4), // 버튼 간격 줄이기
+                          padding: EdgeInsets.zero, // 패딩 제거
+                          onPressed: (){
+                            Navigator.pop(context);
+                          },
+                          icon: Icon(Icons.arrow_back_ios_sharp)
+                      ),
+                    ),
+                    SizedBox(
+                      height: 50,
                     ),
                     Row(
                       children: [

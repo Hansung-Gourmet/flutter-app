@@ -1,4 +1,5 @@
 import 'package:firebase_app_check/firebase_app_check.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import "package:firebase_core/firebase_core.dart";
 import 'package:gourmet_app/screens/loginScreen.dart';
@@ -21,11 +22,8 @@ class MyApp extends StatelessWidget {
       WidgetsFlutterBinding.ensureInitialized();
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
-        name: 'gourmet',
       );
-      // await FirebaseAppCheck.instance.activate(
-      //   androidProvider: AndroidProvider.debug,
-      // );
+      print("Firebase초기화 성공!");
 
       await Future.delayed(Duration(seconds: 1));
     }
