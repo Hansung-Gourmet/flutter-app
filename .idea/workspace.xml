@@ -4,9 +4,94 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
+<<<<<<< Updated upstream
+    <list default="true" id="c171f76e-f3a7-4d3e-8d4c-11bdd1ae2f90" name="Changes" comment="" />
+=======
     <list default="true" id="c171f76e-f3a7-4d3e-8d4c-11bdd1ae2f90" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/flutter-app.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/firepit-log.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/Podfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/Podfile.lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/Runner.xcworkspace/xcshareddata/swiftpm/Package.resolved" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/Runner/GoogleService-Info.plist" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/project/PROJECT@v11_mod=b7a65d61599140076d6aea4d78fceb8c_hash=bfdfe7dc352907fc980b868725387e98plugins=1OJSG6M1FOV3XYQCBH7Z29RZ0FPR9XDE1-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=034c32d0a603a096d9e73b4c601c4525-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=0373078cb525bdc9d562fba286ae591b-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=03b851317ceca063faa9641053f935ad-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=0aaa8f91e6dc83dc9b3cfabe5302e8ae-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=0bf705d45ed5a085a8550f86cb5ea788-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=0d5c060b523f2a7d80e1785faa8c42f8-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=12fa5b5a2b7cd472e3b1d23b669c4739-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=17934ac4c1b054f69983a3be6587f960-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=188f0d516efaefbf0e4e20a0ed58c0ac-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=198bf37ca83eaab2df9a928120b6a599-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=1a12271351b9960de2a19b3afc19ebce-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=20ee854dac8b429a693748db25152fa7-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=237676d324944f119ff7cc5edb7587a7-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=2376a10275281dd73305639e7ae98845-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=28d01b3c67f9bb486e9b1ed4223a7a8d-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=297c073e576bba9977c547a8d5492a5d-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=2a84b8dc12c0177d0315b8da67194989-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=303332144db072339ce387cd7b8eb0f7-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=3392cc73bd0521733fda818a0b142969-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=3422d6bfdd31a1b94e4ba189f9883e14-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=34b0d72d62c3e2eb4192c0fcc16fe24b-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=39061bb1e68d2beb81fe43fc15eeb4cc-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=4200b328ac45ce034916668411e82230-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=5149a1962155444bceeed62f829b2729-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=57e87eb821a5cbedddebf39c72fac10a-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=6810b316c0712bb61fad4d30acbca7de-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=771f90d4161538e2bd8f3f716272ffaa-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=79612159764c789a7b3d1751a96b2f54-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=80d8c51eb6a0d8f6d22cabab254a8f48-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=8209819f380f5d6746ed9ffcc2241909-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=837b3e267f0e1d5adfcc755f5537769b-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=83d8bbbc6685cdc32b04f16f242e2390-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=8ac6e8926100dfcec4e5f221a7e86563-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=97d17969ce4665c6cee5274c48c1f55c-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=a35c97fb367c715b28371ee336f6be9a-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=a3a0969bb7492caa5bbcc26d6c1ff268-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=aea82ee70b78644f5410c1097cb0272c-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=b4651534af51a8a1ae677d47ee803af5-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=b47a670e197d53d0dc9f54a5eedc8650-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=b80a6e7f433e77999076df7a4be3ff75-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=b902099098bdcee4e2a99d40e207db0b-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=bfdca2bd474937acdd1e00df9058ae98-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=c15cafb9c928488e6eda46f8166307bd-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=ccfe4ceacdadc0321c745bfb1f6c5a74-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=cfd2e15e9ee59c4815c382840caa9202-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=d1357773ee45fbdcdcb7ce6bc7976a6d-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=d2472d0daf6a18c2ce9f09ebfaa1317f-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=d384f460f1450286cc69e03fba321901-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=d4bd08f50101ce1ed523a7e9c829d284-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=d752a94c126add35ba1a8ce9433a1b66-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=d7f3bf14854d2d3334144e987f1b0dab-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=d9d06e8512e4b93b29fd63f6edab13d5-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=da4aa42c132f90504775fae541f00e7d-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=de8318fdfe0489e3b486879c5c6b607d-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=e059f80d8949f5fce0c73c198f715d43-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=e316b17a904c15c6f68fe85c54af3498-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=ecaf42ad71ec1973f298711c1f114f55-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=f6d54c8da0a425b6a6ce8f498128557f-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=f7ddeab71ee08a0d20dc940561855670-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/target/TARGET@v11_hash=fa1739fa9d95e13c30fd002ad77d9644-json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gourmet/ios/build/ios/XCBuildData/PIFCache/workspace/WORKSPACE@v11_hash=(null)_subobjects=4789e384021c1461c20d497a9b43586b-json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gourmet/ios/Flutter/AppFrameworkInfo.plist" beforeDir="false" afterPath="$PROJECT_DIR$/gourmet/ios/Flutter/AppFrameworkInfo.plist" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gourmet/ios/Flutter/Debug.xcconfig" beforeDir="false" afterPath="$PROJECT_DIR$/gourmet/ios/Flutter/Debug.xcconfig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gourmet/ios/Flutter/Release.xcconfig" beforeDir="false" afterPath="$PROJECT_DIR$/gourmet/ios/Flutter/Release.xcconfig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gourmet/ios/Runner.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/gourmet/ios/Runner.xcodeproj/project.pbxproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gourmet/ios/Runner.xcworkspace/contents.xcworkspacedata" beforeDir="false" afterPath="$PROJECT_DIR$/gourmet/ios/Runner.xcworkspace/contents.xcworkspacedata" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gourmet/ios/Runner/Info.plist" beforeDir="false" afterPath="$PROJECT_DIR$/gourmet/ios/Runner/Info.plist" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gourmet/lib/firebase_options.dart" beforeDir="false" afterPath="$PROJECT_DIR$/gourmet/lib/firebase_options.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gourmet/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/gourmet/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gourmet/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/gourmet/pubspec.yaml" afterDir="false" />
     </list>
+>>>>>>> Stashed changes
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -18,27 +103,95 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+<<<<<<< Updated upstream
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "IreneChoii"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Hansung-Gourmet/flutter-app.git",
+    "accountId": "1e89be89-c1b6-4f31-b255-45cf1abc6e96"
+  }
+}]]></component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 2
+}]]></component>
+=======
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;IreneChoii&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Hansung-Gourmet/flutter-app.git&quot;,
+    &quot;accountId&quot;: &quot;1e89be89-c1b6-4f31-b255-45cf1abc6e96&quot;
+  }
+}</component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
+>>>>>>> Stashed changes
   <component name="ProjectId" id="2o9fostTJWkqnCPVnc7Ld87hCQB" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Flutter.main.dart.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
+    "com.google.services.firebase.aqiPopupShown": "true",
     "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "main",
+<<<<<<< Updated upstream
+    "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/ghddm/Documents/GitHub/flutter-app/gourmet",
     "settings.editor.selected.configurable": "AndroidSdkUpdater",
+=======
+    "io.flutter.reload.alreadyRun": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/irene/Documents/Github/flutter-app",
+    "settings.editor.selected.configurable": "dart.settings",
+>>>>>>> Stashed changes
     "show.migrate.to.gradle.popup": "false"
   }
 }]]></component>
+  <component name="RunManager">
+    <configuration name="main.dart" type="FlutterRunConfigurationType" factoryName="Flutter" temporary="true" nameIsGenerated="true">
+      <option name="filePath" value="$PROJECT_DIR$/gourmet/lib/main.dart" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Flutter.main.dart" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -49,5 +202,8 @@
       <updated>1730286890271</updated>
     </task>
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
   </component>
 </project>

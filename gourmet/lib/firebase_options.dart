@@ -72,4 +72,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'gourmet-app-31aab.firebasestorage.app',
     iosBundleId: 'com.example.gourmetApp',
   );
+
 }

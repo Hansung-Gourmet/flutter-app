@@ -8,7 +8,7 @@ import 'firebase_options.dart';
 
 
 
-void main(){
+void main() async{
   runApp(MyApp());
 }
 
@@ -24,7 +24,6 @@ class MyApp extends StatelessWidget {
         options: DefaultFirebaseOptions.currentPlatform,
       );
       print("Firebase초기화 성공!");
-
       await Future.delayed(Duration(seconds: 1));
     }
 
