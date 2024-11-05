@@ -51,39 +51,7 @@ class _RestaurantDetailsScreenState extends State<RestaurantDetailsScreen> {
     _loadUserdata=_loadUserData();
   }
 
-  Future<void> initreviewStream()async{
-    final querySnapshot = await FirebaseFirestore.instance
-        .collection("Review")
-        .where("Restaurant_name", isEqualTo: widget.name)
-        .get();
 
-    // 리뷰가 있으면 정렬된 스트림을, 없으면 기본 스트림을 설정
-    if (querySnapshot.docs.isNotEmpty) {
-      // Date 필드가 있는지 확인
-      bool hasDateField = querySnapshot.docs.every((doc) => doc.data().containsKey('Date') && doc.get('Date') != null);
-
-      if (hasDateField) {
-        // Date 필드가 존재하고 null이 아닐 때만 orderBy 사용
-        reviewStream = FirebaseFirestore.instance
-            .collection("Review")
-            .where("Restaurant_name", isEqualTo: widget.name)
-            .orderBy("Date", descending: true)
-            .snapshots();
-      } else {
-        // Date 필드가 없거나 null인 문서가 있으면 orderBy 사용하지 않음
-        reviewStream = FirebaseFirestore.instance
-            .collection("Review")
-            .where("Restaurant_name", isEqualTo: widget.name)
-            .snapshots();
-      }
-    } else {
-      reviewStream = FirebaseFirestore.instance
-          .collection("Review")
-          .where("Restaurant_name", isEqualTo: widget.name)
-          .snapshots();
-    }
-
-  }
 
 
 
@@ -270,7 +238,9 @@ class _RestaurantDetailsScreenState extends State<RestaurantDetailsScreen> {
               if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                 return Center(child: Text("아직 리뷰가 없습니다."));
               }
+
               final data=snapshot.data!.docs;
+
               return StreamBuilder<QuerySnapshot>(
                   stream:  reviewStream,
                   builder: (context,snapshot){
@@ -280,6 +250,7 @@ class _RestaurantDetailsScreenState extends State<RestaurantDetailsScreen> {
                       );
                     }
                     final docs=snapshot.data!.docs;
+                    docs.sort((a, b) => (b.get("Date") as Timestamp).compareTo(a.get("Date") as Timestamp) );
                     int reviewCount=docs.length;
                     print("reviewCount = ${reviewCount}");
                     double sum=0;

@@ -170,8 +170,12 @@ String reviewContent="";
         .get();
   }
   Future<QuerySnapshot> _restaurantData() async {
+
+    final userDoc = await _loadUserdata;
+    String school = (userDoc!.data() as Map<String, dynamic>)["University_name"];
     return await FirebaseFirestore.instance
         .collection("Restaurant")
+        .where("Schools", arrayContains: school)
         .get();
   }
 
