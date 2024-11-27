@@ -26,8 +26,7 @@ class UploadScreen extends StatefulWidget {
 
 class _UploadScreenState extends State<UploadScreen> {
   late int _selectedIndex;  // null 안전성을 위해 late 사용
-  Future<DocumentSnapshot>? _loadUserdata;
-  Future<QuerySnapshot>? _restaurantdata;
+
   int rating=0;
   int  findFood=0;//0이면 안보이게, 1이면 검색 2이면 검색결과보여주기
 
@@ -44,9 +43,18 @@ String reviewContent="";
   void initState() {
     super.initState();
     _selectedIndex = widget.selected;
-    _loadUserdata=_loadUserData();
-    _restaurantdata=_restaurantData();
+
   }
+
+  // 추가할 Stream 함수
+  Stream<DocumentSnapshot> _loadUserDataStream() {
+    String userUid = FirebaseAuth.instance.currentUser!.uid;
+    return FirebaseFirestore.instance
+        .collection("users")
+        .doc(userUid)
+        .snapshots();
+  }
+
   void _handleError(dynamic error) {
     print('Error: ${error.toString()}');
     if (error is FirebaseException) {
@@ -169,23 +177,27 @@ String reviewContent="";
         .doc(userUid)
         .get();
   }
-  Future<QuerySnapshot> _restaurantData() async {
 
-    final userDoc = await _loadUserdata;
-    String school = (userDoc!.data() as Map<String, dynamic>)["University_name"];
-    return await FirebaseFirestore.instance
+
+  Future<List<DocumentSnapshot>> searchRestaurants(String searchText) async {
+    // 현재 유저 정보를 한 번만 가져옴
+    final userDoc = await FirebaseFirestore.instance
+        .collection("users")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get();
+
+    String school = (userDoc.data() as Map<String, dynamic>)["University_name"];
+
+    // 학교에 해당하는 레스토랑 정보 가져오기
+    QuerySnapshot restaurantSnapshot = await FirebaseFirestore.instance
         .collection("Restaurant")
         .where("Schools", arrayContains: school)
         .get();
-  }
 
-  Future<List<DocumentSnapshot>> searchRestaurants(String searchText) {
-    return _restaurantdata!.then((QuerySnapshot snapshot) {
-      return snapshot.docs.where((doc) {
-        String name = doc['Restaurant_name'].toString().toLowerCase();
-        return name.contains(searchText.toLowerCase());
-      }).toList();
-    });
+    return restaurantSnapshot.docs.where((doc) {
+      String name = doc['Restaurant_name'].toString().toLowerCase();
+      return name.contains(searchText.toLowerCase());
+    }).toList();
   }
 
   @override
@@ -216,8 +228,8 @@ String reviewContent="";
 
         ],
       ),
-      drawer: FutureBuilder<DocumentSnapshot>(
-        future: _loadUserdata,
+      drawer: StreamBuilder<DocumentSnapshot>(
+        stream: _loadUserDataStream(),
         builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Drawer(
@@ -259,7 +271,7 @@ String reviewContent="";
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => MyPageScreen()),
+                      MaterialPageRoute(builder: (context) => MyPageScreen(userName: userData["Nickname"])),
                     );
                   },
                 ),
@@ -273,8 +285,8 @@ String reviewContent="";
           FocusScope.of(context).unfocus();
         },
         child: SingleChildScrollView(
-          child: FutureBuilder<DocumentSnapshot>(
-          future: _loadUserdata,
+          child: StreamBuilder<DocumentSnapshot>(
+            stream: _loadUserDataStream(),
           builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());
@@ -299,6 +311,7 @@ String reviewContent="";
                     height: 40,
                   ),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text("${userData["Nickname"]}",style:
                         TextStyle(
@@ -309,38 +322,41 @@ String reviewContent="";
                       SizedBox(
                         width: 110,
                       ),
-                      ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: Colors.black,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(15)), // 사각형 모양을 위한 설정
+                      Container(
+                        margin: EdgeInsets.only(right: 15),
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              backgroundColor: Colors.black,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(Radius.circular(15)), // 사각형 모양을 위한 설정
+                              ),
                             ),
-                          ),
-                          onPressed:  findFood==2&&imageCheck==2&&reviewCheck&&rating>0 ? ()async{
-                            Map<String, dynamic> reviewData = {
-                              'Bad_rate': 0,
-                              'Bad_users': [],  // 리스트 변수 사용
-                              'Content': reviewContent,
-                              'Date': Timestamp.now(),
-                              'Good_rate': 0,
-                              'Good_users': [],  // 리스트 변수 사용
-                              'Images': imageUrls,  // 리스트 변수 사용
-                              'Nickname': userData["Nickname"],
-                              'Rating': rating,
-                              'Restaurant_name': foodName,
-                              'UserId': FirebaseAuth.instance.currentUser!.uid
-                            };
-                            await FirebaseFirestore.instance
-                                .collection('Review')
-                                .add(reviewData);
-                            Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(builder: (context) => ThreadScreen(2)),
-                                  (route) => false,
-                            );
-                          }:null,
-                          child: Text("등록하기")),
+                            onPressed:  findFood==2&&imageCheck==2&&reviewCheck&&rating>0 ? ()async{
+                              Map<String, dynamic> reviewData = {
+                                'Bad_rate': 0,
+                                'Bad_users': [],  // 리스트 변수 사용
+                                'Content': reviewContent,
+                                'Date': Timestamp.now(),
+                                'Good_rate': 0,
+                                'Good_users': [],  // 리스트 변수 사용
+                                'Images': imageUrls,  // 리스트 변수 사용
+                                'Nickname': userData["Nickname"],
+                                'Rating': rating,
+                                'Restaurant_name': foodName,
+                                'UserId': FirebaseAuth.instance.currentUser!.uid
+                              };
+                              await FirebaseFirestore.instance
+                                  .collection('Review')
+                                  .add(reviewData);
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(builder: (context) => ThreadScreen(2)),
+                                    (route) => false,
+                              );
+                            }:null,
+                            child: Text("등록하기")),
+                      ),
                     ],
                   ),
                   SizedBox(
@@ -662,15 +678,12 @@ String reviewContent="";
                   (route) => false,
             );
           } else if (index == 1) {
-            if (_loadUserdata == null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('데이터를 불러오는 중입니다. 잠시만 기다려주세요.'))
-            );
-            return;
-            }
-            // 현재 _loadUserdata데이터가 있을때까지 기다리기
-          final snapshot = await _loadUserdata!;
-            final isStudent = (snapshot.data() as Map<String, dynamic>)["Is_student"];
+            final userDoc = await FirebaseFirestore.instance
+                .collection("users")
+                .doc(FirebaseAuth.instance.currentUser!.uid)
+                .get();
+
+            final isStudent = (userDoc.data() as Map<String, dynamic>)["Is_student"];
           if(isStudent){
             Navigator.pushAndRemoveUntil(
               context,

@@ -19,22 +19,21 @@ class ThreadScreen extends StatefulWidget {
 class _ThreadScreenState extends State<ThreadScreen> {
   late int _selectedIndex;  // null 안전성을 위해 late 사용
 
-  Future<DocumentSnapshot>? _loadUserdata;
+
   @override
   void initState() {
     super.initState();
     _selectedIndex = widget.selected;
-    _loadUserdata=_loadUserData();
-  }
 
-  // DocumentSnapshot을 반환하도록 수정
-  Future<DocumentSnapshot> _loadUserData() async {
+  }
+  Stream<DocumentSnapshot> _loadUserDataStream() {
     String userUid = FirebaseAuth.instance.currentUser!.uid;
-    return await FirebaseFirestore.instance
+    return FirebaseFirestore.instance
         .collection("users")
         .doc(userUid)
-        .get();
+        .snapshots();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -65,8 +64,8 @@ class _ThreadScreenState extends State<ThreadScreen> {
 
         ],
       ),
-      drawer: FutureBuilder<DocumentSnapshot>(
-        future: _loadUserdata,
+      drawer: StreamBuilder<DocumentSnapshot>(
+        stream: _loadUserDataStream(),
         builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Drawer(
@@ -109,7 +108,7 @@ class _ThreadScreenState extends State<ThreadScreen> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => MyPageScreen()),
+                      MaterialPageRoute(builder: (context) => MyPageScreen(userName: userData["Nickname"])),
                     );
                   },
                 ),
@@ -270,15 +269,12 @@ class _ThreadScreenState extends State<ThreadScreen> {
                   (route) => false,
             );
           } else if (index == 1) {
-            if (_loadUserdata == null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('데이터를 불러오는 중입니다. 잠시만 기다려주세요.'))
-              );
-              return;
-            }
-            // 현재 _loadUserdata데이터가 있을때까지 기다리기
-            final snapshot = await _loadUserdata!;
-            final isStudent = (snapshot.data() as Map<String, dynamic>)["Is_student"];
+            final userDoc = await FirebaseFirestore.instance
+                .collection("users")
+                .doc(FirebaseAuth.instance.currentUser!.uid)
+                .get();
+
+            final isStudent = (userDoc.data() as Map<String, dynamic>)["Is_student"];
             if(isStudent){
               Navigator.pushAndRemoveUntil(
                 context,

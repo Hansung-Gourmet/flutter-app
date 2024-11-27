@@ -23,15 +23,7 @@ class _RestaurantDetailsScreenState extends State<RestaurantDetailsScreen> {
   bool _isMenu=true;
   late final Stream<QuerySnapshot> restaurantStream;
   Stream<QuerySnapshot>? reviewStream;
-  Future<DocumentSnapshot>? _loadUserdata;
 
-  Future<DocumentSnapshot> _loadUserData() async {
-    String userUid = FirebaseAuth.instance.currentUser!.uid;
-    return await FirebaseFirestore.instance
-        .collection("users")
-        .doc(userUid)
-        .get();
-  }
 
   @override
   void initState() {
@@ -48,9 +40,16 @@ class _RestaurantDetailsScreenState extends State<RestaurantDetailsScreen> {
         .where("Restaurant_name", isEqualTo: widget.name)  // 1. 먼저 필터링
         //.orderBy("Date", descending: true)  // 2. 그 다음 정렬
         .snapshots();
-    _loadUserdata=_loadUserData();
+
   }
 
+  Stream<DocumentSnapshot> _loadUserDataStream() {
+    String userUid = FirebaseAuth.instance.currentUser!.uid;
+    return FirebaseFirestore.instance
+        .collection("users")
+        .doc(userUid)
+        .snapshots();
+  }
 
 
 
@@ -84,8 +83,8 @@ class _RestaurantDetailsScreenState extends State<RestaurantDetailsScreen> {
 
         ],
       ),
-      drawer: FutureBuilder<DocumentSnapshot>(
-        future: _loadUserdata,
+      drawer: StreamBuilder<DocumentSnapshot>(
+        stream: _loadUserDataStream(),
         builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Drawer(
@@ -128,7 +127,7 @@ class _RestaurantDetailsScreenState extends State<RestaurantDetailsScreen> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => MyPageScreen()),
+                      MaterialPageRoute(builder: (context) => MyPageScreen(userName: userData["Nickname"])),
                     );
                   },
                 ),
@@ -160,15 +159,12 @@ class _RestaurantDetailsScreenState extends State<RestaurantDetailsScreen> {
                   (route) => false,
             );
           }else if (index == 1) {
-            if (_loadUserdata == null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('데이터를 불러오는 중입니다. 잠시만 기다려주세요.'))
-              );
-              return;
-            }
-            // 현재 _loadUserdata데이터가 있을때까지 기다리기
-            final snapshot = await _loadUserdata!;
-            final isStudent = (snapshot.data() as Map<String, dynamic>)["Is_student"];
+            final userDoc = await FirebaseFirestore.instance
+                .collection("users")
+                .doc(FirebaseAuth.instance.currentUser!.uid)
+                .get();
+
+            final isStudent = (userDoc.data() as Map<String, dynamic>)["Is_student"];
             if(isStudent){
               Navigator.pushAndRemoveUntil(
                 context,

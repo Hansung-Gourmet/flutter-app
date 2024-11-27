@@ -27,7 +27,7 @@ class _MapScreenState extends State<MapScreen> {
   List<LatLng> locations=[LatLng(37.582848,127.01058),LatLng(37.588227,126.9936),LatLng(37.5893,127.032)];//한성대 성균관대 고려대 순서
   Map<int,String> _currentStatusMap={0:"한성대학교",1:"성균관대학교",2:"고려대학교"};
   late int _selectedIndex;  // null 안전성을 위해 late 사용
-  Future<DocumentSnapshot>? _loadUserdata;
+
 
   //초기 카메라 위치는 한성대학교로 설청할것임.
 
@@ -38,6 +38,14 @@ class _MapScreenState extends State<MapScreen> {
     accuracy: LocationAccuracy.high,
     distanceFilter: 100,
   );
+
+  Stream<DocumentSnapshot> _loadUserDataStream() {
+    String userUid = FirebaseAuth.instance.currentUser!.uid;
+    return FirebaseFirestore.instance
+        .collection("users")
+        .doc(userUid)
+        .snapshots();
+  }
 
   Future<void> getLocation() async {
     LocationPermission permission = await Geolocator.requestPermission();
@@ -76,7 +84,7 @@ class _MapScreenState extends State<MapScreen> {
     super.initState();
     _selectedIndex = widget.selected;
     initFuture=initData();
-    _loadUserdata=_loadUserData();
+
   }
 
   Future<DocumentSnapshot> _loadUserData() async {
@@ -255,8 +263,8 @@ class _MapScreenState extends State<MapScreen> {
 
         ],
       ),
-      drawer: FutureBuilder<DocumentSnapshot>(
-        future: _loadUserdata,
+      drawer: StreamBuilder<DocumentSnapshot>(
+        stream: _loadUserDataStream(),
         builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Drawer(
@@ -299,7 +307,7 @@ class _MapScreenState extends State<MapScreen> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => MyPageScreen()),
+                      MaterialPageRoute(builder: (context) => MyPageScreen(userName: userData["Nickname"])),
                     );
                   },
                 ),
@@ -640,15 +648,12 @@ class _MapScreenState extends State<MapScreen> {
                   (route) => false,
             );
           } else if (index == 1) {
-            if (_loadUserdata == null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('데이터를 불러오는 중입니다. 잠시만 기다려주세요.'))
-              );
-              return;
-            }
-            // 현재 _loadUserdata데이터가 있을때까지 기다리기
-            final snapshot = await _loadUserdata!;
-            final isStudent = (snapshot.data() as Map<String, dynamic>)["Is_student"];
+            final userDoc = await FirebaseFirestore.instance
+                .collection("users")
+                .doc(FirebaseAuth.instance.currentUser!.uid)
+                .get();
+
+            final isStudent = (userDoc.data() as Map<String, dynamic>)["Is_student"];
             if(isStudent){
               Navigator.pushAndRemoveUntil(
                 context,
