@@ -43,12 +43,13 @@ String reviewContent="";
   void initState() {
     super.initState();
     _selectedIndex = widget.selected;
-
+    _userDataStream=_loadUserDataStream();
   }
-
+  late Stream<DocumentSnapshot> _userDataStream;
   // 추가할 Stream 함수
   Stream<DocumentSnapshot> _loadUserDataStream() {
     String userUid = FirebaseAuth.instance.currentUser!.uid;
+    print("check★★★★★★★★★★★★");
     return FirebaseFirestore.instance
         .collection("users")
         .doc(userUid)
@@ -200,6 +201,7 @@ String reviewContent="";
     }).toList();
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -250,6 +252,8 @@ String reviewContent="";
           }
           //준비되면 yserdata를 이용할 수 있다는것이다.
           final userData = snapshot.data!.data() as Map<String, dynamic>;
+          //변화가 생기면 nickname을 수정하면된다.
+
           return Drawer(
             child: ListView(
               padding: EdgeInsets.zero,
@@ -286,7 +290,7 @@ String reviewContent="";
         },
         child: SingleChildScrollView(
           child: StreamBuilder<DocumentSnapshot>(
-            stream: _loadUserDataStream(),
+            stream: _userDataStream,
           builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());
