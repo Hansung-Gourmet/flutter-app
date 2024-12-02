@@ -167,12 +167,70 @@ class _MyPageScreenState extends State<MyPageScreen> {
                                                  // 날짜 표시
                                                  Padding(
                                                    padding: EdgeInsets.all(10),
-                                                   child: Text(
-                                                     (docs[index]["Date"] as Timestamp).toDate().toString().split(' ')[0],
-                                                     style: TextStyle(
-                                                       color: Colors.grey[600],
-                                                       fontWeight: FontWeight.w500,
-                                                     ),
+                                                   child: Row(
+                                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                     children: [
+                                                       Text(
+                                                         (docs[index]["Date"] as Timestamp).toDate().toString().split(' ')[0],
+                                                         style: TextStyle(
+                                                           color: Colors.grey[600],
+                                                           fontWeight: FontWeight.w500,
+                                                         ),
+                                                       ),
+                                                       IconButton(
+                                                         icon: Icon(Icons.delete),
+                                                         onPressed: () {
+                                                           showDialog(
+                                                             context: context,
+                                                             builder: (BuildContext context) {
+                                                               return AlertDialog(
+                                                                 title: Text('게시물 삭제'),
+                                                                 content: Text('정말로 이 게시물을 삭제하시겠습니까?'),
+                                                                 actions: [
+                                                                   TextButton(
+                                                                     child: Text('아니오'),
+                                                                     onPressed: () {
+                                                                       Navigator.of(context).pop(); // 다이얼로그 닫기
+                                                                     },
+                                                                   ),
+                                                                   TextButton(
+                                                                     child: Text('예'),
+                                                                     onPressed: () async {
+                                                                       try {
+                                                                         // 게시물 삭제
+                                                                         await FirebaseFirestore.instance
+                                                                             .collection("Review")
+                                                                             .doc(docs[index].id)
+                                                                             .delete();
+
+                                                                         Navigator.of(context).pop(); // 다이얼로그 닫기
+
+                                                                         // 삭제 성공 메시지 표시
+                                                                         ScaffoldMessenger.of(context).showSnackBar(
+                                                                           SnackBar(
+                                                                             content: Text('게시물이 삭제되었습니다.'),
+                                                                             duration: Duration(seconds: 2),
+                                                                           ),
+                                                                         );
+                                                                       } catch (e) {
+                                                                         // 에러 처리
+                                                                         Navigator.of(context).pop(); // 다이얼로그 닫기
+                                                                         ScaffoldMessenger.of(context).showSnackBar(
+                                                                           SnackBar(
+                                                                             content: Text('게시물 삭제 중 오류가 발생했습니다.'),
+                                                                             duration: Duration(seconds: 2),
+                                                                           ),
+                                                                         );
+                                                                       }
+                                                                     },
+                                                                   ),
+                                                                 ],
+                                                               );
+                                                             },
+                                                           );
+                                                         },
+                                                       )
+                                                     ],
                                                    ),
                                                  ),
                                                  // 이미지 리스트뷰
