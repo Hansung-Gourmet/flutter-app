@@ -72,10 +72,24 @@ class _MyPageScreenState extends State<MyPageScreen> {
                                 SizedBox(
                                   width: 30,
                                 ),
-                                Text(userData["Nickname"],style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 25
-                                ),)
+                                Expanded(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(userData["Nickname"],style: TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 25
+                                      ),),
+                                      IconButton(
+                                          padding: EdgeInsets.only(right: 20),
+                                          onPressed: (){
+                                            Navigator.pop(context);
+                                          },
+                                          icon: Icon(Icons.arrow_back_ios_sharp)
+                                      )
+                                    ],
+                                  ),
+                                )
                               ],
                             ),
                             SizedBox(
